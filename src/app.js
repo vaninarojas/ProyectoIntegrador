@@ -6,6 +6,7 @@ import handlebars from 'express-handlebars';
 import mongoose from "mongoose";
 import initSocket from './sockets.js';
 
+
 const app = express()
 
 const expressInstance = app.listen(config.PORT, async() => {
@@ -26,3 +27,5 @@ app.engine('handlebars', handlebars.engine());
 app.use('/', viewsRouter);
 app.use('/api/products', productsRouter);
 app.use('/static', express.static(`${config.DIRNAME}/public`));
+
+
