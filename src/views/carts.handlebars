@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+</head>
+<body>
+    <div>
+        <h1>Carrito de Compras</h1>
+        <ul id="cart-list" class="list-group">
+            {{#each products}}
+                <li class="list-group-item" data-id="{{_id}}">
+                    <h2>{{title}}</h2>
+                    <img src="/static/images/{{thumbnail}}" alt="{{title}}" style="max-width: 100px;">
+                    <p>{{description}}</p>
+                    <p>Precio: ${{price}}</p>
+                    <p>Stock: {{stock}}</p>
+                    <button class="remove-from-cart">Eliminar</button>
+                </li>
+            {{/each}}
+        </ul>
+        <button id="back-button">Volver al listado de productos</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        document.getElementById('back-button').addEventListener('click', () => {
+            window.location.href = '/products';
+        });
+
+        document.getElementById('cart-list').addEventListener('click', async (e) => {
+            if (e.target.classList.contains('remove-from-cart')) {
+                const li = e.target.closest('li');
+                const productId = li.getAttribute('data-id');
+
+                const response = await fetch(`/api/cart/${productId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    li.remove();
+                } else {
+                    console.error('Error removing from cart');
+                }
+            }
+        });
+
+        socket.on('cartUpdated', (cart) => {
+            updateCart(cart);
+        });
+
+        function updateCart(cart) {
+            const cartList = document.getElementById('cart-list');
+            cartList.innerHTML = '';
+            cart.forEach(product => {
+                const li = document.createElement('li');
+                li.classList.add('list-group-item');
+                li.setAttribute('data-id', product._id);
+                li.innerHTML = `
+                    <h2>${product.title}</h2>
+                    <img src="/static/images/${product.thumbnail}" alt="${product.title}" style="max-width: 100px;">
+                    <p>${product.description}</p>
+                    <p>Precio: $${product.price}</p>
+                    <p>Stock: ${product.stock}</p>
+                    <button class="remove-from-cart">Eliminar</button>
+                `;
+                cartList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>

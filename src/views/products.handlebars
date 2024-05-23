@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado Productos</title>
+</head>
+<body>
+    <div>
+        <h1>Listado de productos</h1>
+
+        <ul id="product-list" class="list-group">
+            {{#each products}}
+                <li class="list-group-item">
+                    <h2>{{title}}</h2>
+                     <img src="/static/img/{{thumbnail}}" alt="{{title}}" style="max-width: 100px;">
+                    <p>{{description}}</p>
+                    <p>Precio: ${{price}}</p>
+                    <p>Stock: {{stock}}</p>
+                     <button id="add-to-cart">Agregar al carrito de compras</button>
+                         <button id="view-cart">Ver Carrito</button>
+                </li>
+            {{/each}}
+        </ul>
+        
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+          document.getElementById('view-cart').addEventListener('click', () => {
+            window.location.href = '/cart';
+        });
+
+        document.getElementById('product-list').addEventListener('click', async (e) => {
+            if (e.target.classList.contains('add-to-cart')) {
+                const li = e.target.closest('li');
+                const productId = li.getAttribute('data-id');
+
+                const response = await fetch(`/api/cart`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId })
+                });
+
+                if (!response.ok) {
+                    const result = await response.json();
+                    console.error('Error adding to cart:', result.error);
+                }
+            }
+        });
+
+        socket.on('cartUpdated', (cart) => {
+            console.log('Carrito actualizado:', cart);
+        });
+        socket.on('newProduct', (product) => {
+            addProductToList(product);
+        });
+
+        function addProductToList(product) {
+            const productList = document.getElementById('product-list');
+            const li = document.createElement('li');
+            li.classList.add('list-group-item');
+            li.innerHTML = `
+                <h2>${product.title}</h2>
+                <p>${product.description}</p>
+                <p>Precio: $${product.price}</p>
+                <p>Stock: ${product.stock}</p>
+                <img src="/static/images/${product.thumbnail}" alt="${product.title}">
+            `;
+            productList.appendChild(li);
+        }
+    </script>
+</body>
+</html>
+
+
