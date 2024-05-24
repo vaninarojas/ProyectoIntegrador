@@ -10,7 +10,7 @@ const schema = new mongoose.Schema({
     price: { type: Number, required: true },
     thumbnail: { type: String, required: false },
     stock: { type: Number, required: true },
-    code: { type: String, required: true }
+    code: { type: String, required: false }
 });
 
 const model = mongoose.model(collection, schema);
