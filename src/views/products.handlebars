@@ -11,21 +11,21 @@
 
         <ul id="product-list" class="list-group">
             {{#each products}}
-                <li class="list-group-item" data-id="{{id}}">
+                <li class="list-group-item" data-id="{{_id}}">
                     <h2>{{title}}</h2>
                     <img src="/static/img/{{thumbnail}}" alt="{{title}}" style="max-width: 100px;">
                     <p>{{description}}</p>
                     <p>Precio: ${{price}}</p>
                     <p>Stock: {{stock}}</p>
                     <button class="add-to-cart">Agregar al carrito de compras</button>
-                      <button class="delete-product" data-product-id="{{_id}}">Eliminar</button>
+                    <button class="delete-product" data-product-id="{{_id}}">Eliminar</button>
                 </li>
             {{/each}}
         </ul>
 
         <button class="view-cart">Ver Carrito</button>
         <button id="show-add-product-form">Agregar productos</button>
-        
+
         <form id="add-product-form" style="display: none;">
             <h2>Agregar nuevo producto</h2>
             <label for="title">Título:</label>
@@ -57,16 +57,18 @@
             });
 
             document.getElementById('product-list').addEventListener('click', async (e) => {
+                const li = e.target.closest('li');
+                const productId = li.getAttribute('data-id');
+
                 if (e.target.classList.contains('add-to-cart')) {
-                    const li = e.target.closest('li');
-                    const productId = li.getAttribute('data-id');
+                    const quantity = 1;
 
                     const response = await fetch(`/api/cart`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ productId })
+                        body: JSON.stringify({ productId, quantity })
                     });
 
                     if (response.ok) {
@@ -75,6 +77,24 @@
                     } else {
                         const result = await response.json();
                         console.error('Error al añadir al carrito:', result.error);
+                    }
+                }
+
+                if (e.target.classList.contains('delete-product')) {
+                    const response = await fetch(`/api/products/${productId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        li.remove();  // Remove the product from the DOM
+                        const deletedProduct = await response.json();
+                        console.log('Producto eliminado:', deletedProduct);
+                    } else {
+                        const result = await response.json();
+                        console.error('Error al eliminar el producto:', result.error);
                     }
                 }
             });
@@ -110,51 +130,11 @@
                 }
             });
 
-
-            const deleteProduct = async (productId) => {
-    try {
-        const response = await fetch(`/api/products/${productId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            const deletedProduct = await response.json();
-            console.log('Producto eliminado:', deletedProduct);
-         
-        } else {
-            const error = await response.json();
-            console.error('Error al eliminar el producto:', error.error);
-            
-        }
-    } catch (error) {
-        console.error('Error de red:', error);
-        
-    }
-};
-
-document.getElementById('product-list').addEventListener('click', async (e) => {
-        if (e.target.classList.contains('delete-product')) {
-            const productId = e.target.dataset.productId; // Obtener el ID del producto a eliminar
-            deleteProduct(productId); // Llamar a la función para eliminar el producto
-        }
-    });
-    
-            socket.on('cartUpdated', (cart) => {
-                console.log('Carrito actualizado:', cart);
-            });
-
-            socket.on('newProduct', (product) => {
-                addProductToList(product);
-            });
-
             function addProductToList(product) {
                 const productList = document.getElementById('product-list');
                 const li = document.createElement('li');
                 li.classList.add('list-group-item');
-                li.setAttribute('data-id', product.id);
+                li.setAttribute('data-id', product._id); // Ensure this is _id
                 li.innerHTML = `
                     <h2>${product.title}</h2>
                     <img src="/static/img/${product.thumbnail}" alt="${product.title}" style="max-width: 100px;">
@@ -162,9 +142,18 @@ document.getElementById('product-list').addEventListener('click', async (e) => {
                     <p>Precio: $${product.price}</p>
                     <p>Stock: ${product.stock}</p>
                     <button class="add-to-cart">Agregar al carrito de compras</button>
+                    <button class="delete-product" data-product-id="${product._id}">Eliminar</button>
                 `;
                 productList.appendChild(li);
             }
+
+            socket.on('cartUpdated', (cart) => {
+                console.log('Carrito actualizado:', cart);
+            });
+
+            socket.on('newProduct', (product) => {
+                addProductToList(product);
+            });
         });
     </script>
 </body>

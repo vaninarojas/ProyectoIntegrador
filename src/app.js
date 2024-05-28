@@ -2,6 +2,7 @@ import express from 'express';
 import config from './config.js';
 import productsRouter from './routes/products.routes.js';
 import viewsRouter from './routes/views.routes.js';
+import cartRouter from './routes/cart.routes.js';
 import handlebars from 'express-handlebars';
 import mongoose from "mongoose";
 import initSocket from './sockets.js';
@@ -26,6 +27,7 @@ app.engine('handlebars', handlebars.engine());
 
 app.use('/', viewsRouter);
 app.use('/api/products', productsRouter);
+app.use('/api/cart', cartRouter);
 app.use('/static', express.static(`${config.DIRNAME}/public`));
 
 
