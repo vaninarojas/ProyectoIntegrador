@@ -5,7 +5,7 @@ import productsModel from '../dao/models/products.model.js';
 
 const router = Router();
 
-// Obtener el carrito
+
 router.get('/', async (req, res) => {
     try {
         const cart = await Cart.findOne().populate('products.product').lean();
@@ -15,7 +15,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Agregar un producto al carrito
 router.post('/', async (req, res) => {
     try {
         const { productId, quantity } = req.body;
@@ -51,7 +50,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Eliminar un producto del carrito
+
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

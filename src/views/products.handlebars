@@ -89,7 +89,7 @@
                     });
 
                     if (response.ok) {
-                        li.remove();  // Remove the product from the DOM
+                        li.remove();  
                         const deletedProduct = await response.json();
                         console.log('Producto eliminado:', deletedProduct);
                     } else {
@@ -134,7 +134,7 @@
                 const productList = document.getElementById('product-list');
                 const li = document.createElement('li');
                 li.classList.add('list-group-item');
-                li.setAttribute('data-id', product._id); // Ensure this is _id
+                li.setAttribute('data-id', product._id); 
                 li.innerHTML = `
                     <h2>${product.title}</h2>
                     <img src="/static/img/${product.thumbnail}" alt="${product.title}" style="max-width: 100px;">
