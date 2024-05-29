@@ -12,7 +12,7 @@
             {{#each products}}
                 <li class="list-group-item" data-id="{{product._id}}">
                     <h2>{{product.title}}</h2>
-                    <img src="/static/images/{{product.thumbnail}}" alt="{{product.title}}" style="max-width: 100px;">
+                    <img src="/static/img/{{product.thumbnail}}" alt="{{product.title}}" style="max-width: 100px;">
                     <p>{{product.description}}</p>
                     <p>Precio: ${{product.price}}</p>
                     <p>Stock: {{product.stock}}</p>
@@ -61,7 +61,7 @@
                 li.setAttribute('data-id', item.product._id);
                 li.innerHTML = `
                     <h2>${item.product.title}</h2>
-                    <img src="/static/images/${item.product.thumbnail}" alt="${item.product.title}" style="max-width: 100px;">
+                    <img src="/static/img/${item.product.thumbnail}" alt="${item.product.title}" style="max-width: 100px;">
                     <p>${item.product.description}</p>
                     <p>Precio: $${item.product.price}</p>
                     <p>Stock: ${item.product.stock}</p>

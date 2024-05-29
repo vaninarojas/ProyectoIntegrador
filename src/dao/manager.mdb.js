@@ -1,16 +1,12 @@
-class CollectionManager {
+import productsModel from './models/products.model.js';
+
+class ProductsManager {
     constructor() {
     }
 
-    getAll = async (limit) => {
+    getAll = async (limit = 0) => {
         try {
-        } catch (err) {
-            return err.message;
-        };
-    };
-
-    add = async (newData) => {
-        try {
+            return limit === 0 ? await productsModel.find().lean(): await productsModel.find().limit(limit).lean();
         } catch (err) {
             return err.message;
         };
@@ -18,24 +14,35 @@ class CollectionManager {
 
     getById = async (id) => {
         try {
+            return await productsModel.findById(id).lean();
         } catch (err) {
             return err.message;
         };
     };
 
-    update = async (id, updProd) => {
+    add = async (newData) => {
         try {
+            return await productsModel.create(newData);
         } catch (err) {
             return err.message;
         };
     };
 
-    delete = async (idDelete) => {
+    update = async (filter, update, options) => {
         try {
+            return await productsModel.findOneAndUpdate(filter, update, options);
+        } catch (err) {
+            return err.message;
+        };
+    };
+
+    delete = async (id) => {
+        try {
+            return productsModel.findOneAndDelete(id);
         } catch (err) {
             return err.message;
         };
     };
 }
 
-export default CollectionManager;
+export default ProductsManager;

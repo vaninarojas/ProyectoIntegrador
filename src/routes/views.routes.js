@@ -21,7 +21,15 @@ router.get('/products', async (req, res) => {
     }
 });
 
-
+router.get('/products/:productId', async (req, res) => {
+    const { productId } = req.params;
+    try {
+        const product = await productsModel.findById(productId).lean();
+        res.render('product-details', { product });
+    } catch (err) {
+        res.status(500).send({ error: err.message });
+    }
+});
 
 
 export default router;

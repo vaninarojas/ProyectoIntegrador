@@ -4,15 +4,70 @@ import productsModel from '../dao/models/products.model.js';
 import { uploader } from '../uploader.js';
 
 
+
 const router = Router();
 
 router.get('/', async (req, res) => {
     try {
-        const products = await productsModel.find().lean();
+     
+        const { limit = 10, page = 1, sort, category, available } = req.query;
 
-        res.status(200).send({ origin: config.SERVER, payload: products });
+      
+        let queryOptions = {};
+
+        
+        if (category) {
+            queryOptions.category = category;
+        }
+
+      
+        if (available !== undefined) {
+            queryOptions.available = available;
+        }
+
+      
+        let sortOptions = {};
+        if (sort) {
+            sortOptions = { price: sort === 'asc' ? 1 : -1 };
+        }
+
+   
+        const options = {
+            page: parseInt(page, 10),
+            limit: parseInt(limit, 10),
+            sort: sortOptions
+        };
+
+        const result = await productsModel.paginate(queryOptions, options);
+
+       
+        res.status(200).send({
+            status: 'success',
+            payload: result.docs,
+            totalPages: result.totalPages,
+            prevPage: result.hasPrevPage ? result.prevPage : null,
+            nextPage: result.hasNextPage ? result.nextPage : null,
+            page: result.page,
+            hasPrevPage: result.hasPrevPage,
+            hasNextPage: result.hasNextPage,
+            prevLink: result.hasPrevPage ? `/api/products?page=${result.prevPage}&limit=${limit}&sort=${sort}&category=${category}&available=${available}` : null,
+            nextLink: result.hasNextPage ? `/api/products?page=${result.nextPage}&limit=${limit}&sort=${sort}&category=${category}&available=${available}` : null
+        });
     } catch (err) {
-        res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
+      
+        res.status(500).send({
+            status: 'error',
+            payload: null,
+            totalPages: null,
+            prevPage: null,
+            nextPage: null,
+            page: null,
+            hasPrevPage: false,
+            hasNextPage: false,
+            prevLink: null,
+            nextLink: null,
+            error: err.message
+        });
     }
 });
 
