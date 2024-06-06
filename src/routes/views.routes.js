@@ -12,6 +12,24 @@ router.get('/chat', async (req, res) => {
         res.status(500).send({ error: err.message });
     }
 });
+
+router.get('/register', (req, res) => {
+    res.render('register', {});
+});
+
+router.get('/login', (req, res) => {
+    
+    if (req.session.user) return res.redirect('/products');
+    res.render('login', {});
+});
+
+// router.get('/profile', (req, res) => {
+
+//     if (!req.session.user) return res.redirect('/login');
+//     res.render('profile', { user: req.session.user });
+// });
+
+
 router.get('/products', async (req, res) => {
     try {
         const products = await productsModel.find().lean();

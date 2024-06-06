@@ -6,6 +6,15 @@
     <title>Listado Productos</title>
 </head>
 <body>
+
+ {{#if user}}
+            <h2>Bienvenido, {{user.firstName}} {{user.lastName}}!</h2>
+            <h3>Rol: {{user.role}}</h3>
+            <form action="/api/sessions/logout" method="get">
+                <button type="submit" class="btn btn-success">Salir</button>
+            </form>
+        {{/if}}
+    
     <div>
         <h1>Listado de productos</h1>
 

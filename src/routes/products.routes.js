@@ -38,12 +38,13 @@ router.get('/', async (req, res) => {
             sort: sortOptions
         };
 
-        const result = await productsModel.paginate(queryOptions, options);
-
-       
+        res.render('products', {
+            products: result.docs,
+            user: req.session.user || null
+        });
         res.status(200).send({
             status: 'success',
-            payload: result.docs,
+            payload: result.docs, user,
             totalPages: result.totalPages,
             prevPage: result.hasPrevPage ? result.prevPage : null,
             nextPage: result.hasNextPage ? result.nextPage : null,
