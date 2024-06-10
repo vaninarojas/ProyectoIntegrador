@@ -6,8 +6,8 @@ const router = Router();
 
 const adminAuth = (req, res, next) => {
     if (!req.session.user || req.session.user.role !== 'admin')
-    
-        return res.status(401).send({ origin: config.SERVER, payload: 'Acceso no autorizado: se requiere autenticación y nivel de admin' });
+        return res.redirect('/login');
+        // return res.status(401).send({ origin: config.SERVER, payload: 'Acceso no autorizado: se requiere autenticación y nivel de admin' });
 
     next();
 }
