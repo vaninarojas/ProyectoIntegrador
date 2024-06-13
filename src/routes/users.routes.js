@@ -37,19 +37,6 @@ router.get('/paginate/:page/:limit', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-
-        const { firstName, lastName, email, password, role } = req.body;
-
-        const userRole = role && role === 'admin' ? 'admin' : 'usuario';
-
-        const newUser = {
-            firstName,
-            lastName,
-            email,
-            password, 
-            role: userRole
-        };
-
         const process = await manager.add(req.body);
         
         res.status(200).send({ origin: config.SERVER, payload: process });
@@ -57,6 +44,7 @@ router.post('/', async (req, res) => {
         res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
     }
 });
+
 
 router.put('/:id', async (req, res) => {
     try {
@@ -81,5 +69,7 @@ router.delete('/:id', async (req, res) => {
         res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
     }
 });
+
+
 
 export default router;

@@ -23,11 +23,11 @@ router.get('/login', (req, res) => {
     res.render('login', {});
 });
 
-// router.get('/profile', (req, res) => {
+router.get('/products', (req, res) => {
 
-//     if (!req.session.user) return res.redirect('/login');
-//     res.render('profile', { user: req.session.user });
-// });
+    if (!req.session.user) return res.redirect('/login');
+    res.render('products', { user: req.session.user });
+});
 
 
 router.get('/products', async (req, res) => {
