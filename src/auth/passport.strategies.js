@@ -3,14 +3,14 @@ import local from 'passport-local';
 import UsersManager from '../dao/users.manager.mdb.js';
 import { isValidPassword } from '../utils.js';
 import GitHubStrategy from 'passport-github2';
-import config from "../config.js"
+import config from "../config.js";
 
 const localStrategy = local.Strategy;
 const manager = new UsersManager();
 
 const initAuthStrategies = () => {
     passport.use('login', new localStrategy(
-        {passReqToCallback: true, usernameField: 'email'},
+        { passReqToCallback: true, usernameField: 'email' },
         async (req, username, password, done) => {
             try {
                 const foundUser = await manager.getOne({ email: username });
@@ -33,30 +33,32 @@ const initAuthStrategies = () => {
             clientSecret: config.GITHUB_CLIENT_SECRET,
             callbackURL: config.GITHUB_CALLBACK_URL
         },
-        async (req, profile, done) => {
+        async (accessToken, refreshToken, profile, done) => {
             try {
-                
                 const email = profile._json?.email || null;
-                
-              
+
                 if (email) {
-                   
-                    const foundUser = await manager.getOne({ email: email });
+                    let foundUser = await manager.getOne({ email: email });
 
                     if (!foundUser) {
                         const user = {
                             firstName: profile._json.name.split(' ')[0],
                             lastName: profile._json.name.split(' ')[1],
                             email: email,
-                            password: 'none'
-                        }
+                            password: 'none',
+                            githubAccessToken: accessToken,
+                            githubRefreshToken: refreshToken
+                        };
 
-                        const process = await manager.add(user);
-
-                        return done(null, process);
+                        foundUser = await manager.add(user);
                     } else {
-                        return done(null, foundUser);
+                        // Actualiza los tokens si es necesario
+                        foundUser.githubAccessToken = accessToken;
+                        foundUser.githubRefreshToken = refreshToken;
+                        await manager.update(foundUser._id, foundUser);
                     }
+
+                    return done(null, foundUser);
                 } else {
                     return done(new Error('Faltan datos de perfil'), null);
                 }
@@ -66,14 +68,13 @@ const initAuthStrategies = () => {
         }
     ));
 
-
     passport.serializeUser((user, done) => {
         done(null, user);
     });
-        
+
     passport.deserializeUser((user, done) => {
         done(null, user);
     });
-}
+};
 
 export default initAuthStrategies;
