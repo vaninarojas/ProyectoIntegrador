@@ -1,6 +1,6 @@
 import passport from 'passport';
 import local from 'passport-local';
-import UsersManager from '../dao/users.manager.mdb.js';
+import UsersManager from '../controllers/users.manager.mdb.js';
 import { isValidPassword } from '../utils.js';
 import GitHubStrategy from 'passport-github2';
 import config from "../config.js";
@@ -52,7 +52,7 @@ const initAuthStrategies = () => {
 
                         foundUser = await manager.add(user);
                     } else {
-                        // Actualiza los tokens si es necesario
+                        
                         foundUser.githubAccessToken = accessToken;
                         foundUser.githubRefreshToken = refreshToken;
                         await manager.update(foundUser._id, foundUser);

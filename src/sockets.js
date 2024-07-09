@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import Message from "../src/dao/models/chat.model.js"
+import Message from "../src/models/chat.model.js"
 
 const initSocket = (httpServer) => {
     let messages = [];

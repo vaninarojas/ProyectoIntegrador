@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import config from '../config.js';
-import productsModel from '../dao/models/products.model.js';
+import productsModel from '../models/products.model.js';
 import { uploader } from '../uploader.js';
 
 

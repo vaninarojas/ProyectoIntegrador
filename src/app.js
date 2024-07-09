@@ -14,6 +14,7 @@ import session from 'express-session';
 // import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import FileStore from 'session-file-store';
+import cors from 'cors';
 
 
 
@@ -37,6 +38,7 @@ const fileStorage = FileStore(session);
         saveUninitialized: false
 }));
 
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(config.SECRET));
