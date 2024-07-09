@@ -2,7 +2,7 @@ import { Router } from 'express';
 import config from '../config.js';
 import productsModel from '../models/products.model.js';
 import { uploader } from '../uploader.js';
-
+import { verifyRequiredBody, handlePolicies } from '../utils.js';
 
 
 const router = Router();
@@ -72,7 +72,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/', uploader.single('thumbnail'), async (req, res) => {
+router.post('/', verifyRequiredBody, handlePolicies('admin', 'premium'), uploader.single('thumbnail'), async (req, res) => {
     try {
         const socketServer = req.app.get('socketServer');
         const newProduct = await productsModel.create(req.body);
@@ -86,7 +86,7 @@ router.post('/', uploader.single('thumbnail'), async (req, res) => {
 });
 
 
-router.put('/:id', async (req, res) => {
+router.put('/:id',  verifyRequiredBody, handlePolicies('admin', 'premium'), async (req, res) => {
     try {
         const filter = { _id: req.params.id };
         const update = req.body;

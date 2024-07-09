@@ -1,7 +1,17 @@
 import path from 'path';
+import { Command } from 'commander';
 import dotenv from 'dotenv';
 
-dotenv.config();
+
+const commandLine = new Command();
+commandLine
+    .option('--mode <mode>')
+    .option('--port <port>')
+    .option('--setup <number>')
+commandLine.parse();
+const clOptions = commandLine.opts();
+
+dotenv.config({ path: clOptions.mode === 'devel' ? '.env.devel' : '.env.prod' });
 
 const config = {
     SERVER: process.env.SERVER || 'default_server',
@@ -17,5 +27,7 @@ const config = {
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     GITHUB_CALLBACK_URL: process.env.GITHUB_CALLBACK_URL
 }
+
+
 
 export default config;

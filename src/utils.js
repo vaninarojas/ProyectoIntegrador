@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-
 import config from './config.js';
 
 export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10));
@@ -17,3 +16,12 @@ export const verifyRequiredBody = (requiredFields) => {
       next();
     };
 };
+
+export const handlePolicies = policies => {
+    return async (req, res, next) => {
+        console.log(req.user);
+        if (!req.user) return res.status(401).send({ origin: config.SERVER, payload: 'Usuario no autenticado' });
+        if (policies.includes(req.user.role)) return next();
+        res.status(403).send({ origin: config.SERVER, payload: 'No tiene permisos para acceder al recurso' });
+    }
+}
